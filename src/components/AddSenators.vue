@@ -28,6 +28,30 @@
           required
         ></b-form-input>
       </b-form-group>
+      <b-form-group
+        id="input-group-3"
+        label="Your firstname:"
+        label-for="input-2"
+      >
+        <b-form-input
+          id="input-3"
+          v-model="firstname"
+          placeholder="Enter firstname"
+          required
+        ></b-form-input>
+      </b-form-group>
+      <b-form-group
+        id="input-group-4"
+        label="Your lastname:"
+        label-for="input-2"
+      >
+        <b-form-input
+          id="input-4"
+          v-model="lastname"
+          placeholder="Enter lastname"
+          required
+        ></b-form-input>
+      </b-form-group>
 
       <b-button type="submit" variant="primary">Submit</b-button>
       <b-button type="reset" variant="danger">Reset</b-button>
@@ -43,6 +67,8 @@ export default {
     return {
       email: "",
       password: "",
+      firstName: "",
+      lastName: "",
     };
   },
   methods: {
@@ -56,6 +82,8 @@ export default {
         // id: Math.floor(Math.random() * 100000),
         email: this.email,
         password: this.password,
+        firstName: this.firstName,
+        lastName: this.this.lastName,
       };
       this.responseAvailable = false;
       const userLogin = await service.create(newUser);
