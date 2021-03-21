@@ -83,7 +83,7 @@ export default {
         email: this.email,
         password: this.password,
         firstName: this.firstName,
-        lastName: this.this.lastName,
+        lastName: this.lastName,
       };
       this.responseAvailable = false;
       const userLogin = await service.create(newUser);
