@@ -26,7 +26,7 @@ const register = {
             const checkQuery = `SELECT * FROM users WHERE email=?`;
             const value = [email];
             const check = await pool.query(checkQuery, value);
-
+            console.log("create user", check)
             // check if user exist response
             if (check.rows[0]) {
                 return res.status(400).json({
