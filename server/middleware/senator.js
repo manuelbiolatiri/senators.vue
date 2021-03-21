@@ -1,32 +1,26 @@
+const Joi = require('@hapi/joi');
 const senatorCheck = {
     checkSenator (req, res ,next) {
-        const { name, phoneNumber, state, email } = req.body;
 
-        if (phoneNumber.length < 11) {
-            return res.status(400).json({
-                status: 'error',
-                error: 'Phone number must be 11 characters'
-            })
-        }
-
-        if (name.length < 3) {
-            return res.status(400).json({
-                status: 'error',
-                error: 'Name cannot be less than 3 characters'
-            })
-        }
-
-        if ( state == '', state == undefined || state == null) {
-            return res.status(400).json({
-                status: 'error',
-                error: 'State can not be empty'
-            })
-        }
-        // check if email value has @(mail service).com
-        if (!(/[\w]+@[a-zA-Z]+\.[a-zA-Z]{2}/.test(email))) {
-            return res.status(400).json({
+        if (!(/[\w]+@[a-zA-Z]+\.[a-zA-Z]{2}/.test(req.body.email))) {
+            return res.status(422).json({
                 status: 'error',
                 error: 'invalid email format'
+            })
+        }
+        const schema = Joi.object({
+            email: Joi.string().required(),
+            name: Joi.string().min(3).required(),
+            state: Joi.string().required(),
+            phoneNumber: Joi.string().required()
+        });
+        const { error } = schema.validate(req.body, {
+            allowUnknown: true,
+            abortEarly: true
+        });
+        if (error) {
+            return res.status(422).json({
+                error: error.details[0].message.replace(/['"]/g, '')
             })
         }
         next();

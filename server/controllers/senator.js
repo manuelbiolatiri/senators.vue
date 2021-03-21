@@ -17,55 +17,58 @@ const senatorController = {
                     })
                 }
                 // check if email exist (email check)
-                const checkQuery = `SELECT * FROM users WHERE email=?`;
+                const checkQuery = `SELECT * FROM senators WHERE email=?`;
                 const value = [email];
-                const check = await pool.query(checkQuery, value);
-                console.log("check email",check)
-                // check if user exist response
-                if (check.rows[0]) {
+                await pool.query(checkQuery, value, (err, result) => {
+                if (result.length == 1) {
                     return res.status(400).json({
-                        status: 'error',
-                        error: 'email already exist'
+                    status: "error",
+                    error: "senator with this email already exist.",
                     });
                 }
+                });
 
                 const findState = `SELECT * FROM states WHERE state=?`;
                 const stateValue = [req.body.state];
-                const findId = await pool.query(findState, stateValue);
-                let state = findId.rows[0].id;
+                await pool.query(findState, stateValue, async (err, result) => {
+                    if (result) {
 
-                // database senator query
-                const create = `INSERT INTO senators (name, email, phoneNumber, state)
+                    // database senator query
+                    const create = `INSERT INTO senators (name, email, phoneNumber, state)
                                 VALUES(?, ?, ?, ?)`;
-                const values = [name, email, phoneNumber, state];
-                const createQuery = await pool.query(create, values);
-                console.log("check email",createQuery, createQuery.rows[0])
-                // senator response
-                res.status(201).json({
-                    status: 'success',
-                    data: {
-                        message: 'senator successfully created',
-                        name: createQuery.rows[0].name,
-                        email: createQuery.rows[0].email,
-                        phoneNumber: createQuery.rows[0].phoneNumber,
-                        state: createQuery.rows[0].state
-                    }
+                    const values = [name, email, phoneNumber, result[0].id];
+                    await pool.query(create, values, (err, result) => {
+                        if (result) {
+                            return res.status(400).json({
+                                status: "success",
+                                data: {
+                                    name,
+                                    email,
+                                    phoneNumber,
+                                    state: result[0].id
+                                },
+                                message: "Senator successfully created",
+                            });
+                        } else {
+                            return res.status(400).json({
+                                status: "error",
+                                error: "Unable to create senator at the moment, Pls try again later.",
+                            });
+                        }
+                    });
+                }
                 })
-            });
-
+            })
         }
         catch (e) {
             console.log("error on creating a senator", e);
         }
     },
     async modifySenator(req, res) {
-        //  parameter (number)
         const id = parseInt(req.params.id);
-
         try {
             // verify token
             jwt.verify(req.token, process.env.SECRET_KEY, async (err) => {
-
                 // incorrect token
                 if (err) {
                     return res.status(403).json({
@@ -77,52 +80,55 @@ const senatorController = {
             // select an post query
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
-            const checkQuery = await pool.query(check, checkValue);
-
-            // post check response
-            if (!checkQuery.rows[0]) {
-                return res.status(400).json({
-                    status: 'error',
-                    error: 'senator does not exist'
-                });
-            }
-            console.log("checkQuery senator", checkQuery)
-            // body values
-            const name = req.body.name || checkQuery.rows[0].name;
-            const phoneNumber = req.body.phoneNumber || checkQuery.rows[0].phoneNumber;
-            const email = req.body.phoneNumber || checkQuery.rows[0].email;
-            const state = req.body.phoneNumber || checkQuery.rows[0].state;
-
-            // check if email exist (email check)
-            const checkEmail = `SELECT * FROM users WHERE email=?`;
-            const value = [email];
-            const findOne = await pool.query(checkEmail, value);
-
-            // check if user exist response
-            if (findOne.rows[0]) {
-                return res.status(400).json({
-                    status: 'error',
-                    error: 'email already exist'
-                });
-            }
-
-            // update selected post query
-            const modify = `UPDATE senators SET name=?, phoneNumber=?, email=?, state=? WHERE id=?`;
-            const values = [name, phoneNumber, email, state, id];
-            const modifyQuery = await pool.query(modify, values)
-            console.log("modifyQuery senator", modifyQuery)
-            // update response
-            res.status(200).json({
-                status: 'success',
-                data: {
-                    message: 'senator successfully updated',
-                    name: modifyQuery.rows[0].name,
-                    email: modifyQuery.rows[0].email,
-                    phoneNumber: modifyQuery.rows[0].phoneNumber,
-                    state: modifyQuery.rows[0].state
+            await pool.query(check, checkValue, async (err, result) => {
+                if (result.length == 0) {
+                    return res.status(400).json({
+                        status: "error",
+                        error: "senator does not exist",
+                    });
                 }
-            });
+                
+                // body values
+                const name = req.body.name || result[0].name;
+                const phoneNumber = req.body.phoneNumber || result[0].phoneNumber;
+                const email = req.body.phoneNumber || result[0].email;
+                const state = req.body.phoneNumber || result[0].state;
 
+                // check if email exist (email check)
+                const checkEmail = `SELECT * FROM users WHERE email=?`;
+                const value = [email];
+                await pool.query(checkEmail, value, async (err, founddEmail) => {
+                    if (founddEmail[0]) {
+                        return res.status(400).json({
+                            status: 'error',
+                            error: 'email already exist'
+                        });
+                    }
+                
+                });
+                // update selected post query
+                const modify = `UPDATE senators SET name=?, phoneNumber=?, email=?, state=? WHERE id=?`;
+                const values = [name, phoneNumber, email, state, id];
+                await pool.query(modify, values, (err, updated) => {
+                    if (updated) {
+                        return res.status(200).json({
+                                status: 'success',
+                                data: {
+                                    message: 'Senator successfully updated',
+                                    name: updated[0].name,
+                                    email: updated[0].email,
+                                    phoneNumber: updated[0].phoneNumber,
+                                    state: updated[0].state
+                                }
+                            });
+                        } else {
+                        return res.status(400).json({
+                            status: "error",
+                            error: "Unable to update senator at the moment, Pls try again later.",
+                        });
+                    }
+                })
+            })
         }
         catch (e) {
             console.log(e)
@@ -145,30 +151,29 @@ const senatorController = {
             // select an post query
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
-            const checkQuery = await pool.query(check, checkValue);
-
-            // post check response
-            if (!checkQuery.rows[0]) {
-                return res.status(400).json({
-                    status: 'error',
-                    error: 'senator does not exist'
-                });
-            }
+            await pool.query(check, checkValue, (err, result) => {
+                if (result.length == 0) {
+                    return res.status(400).json({
+                        status: "error",
+                        error: "senator does not exist",
+                    });
+                }
+            })
 
             // delete post query
             const remove = `DELETE FROM senators WHERE id=?`;
             const value = [id];
-            const removeQuery = await pool.query(remove, value);
-
-            // delete response
-            res.status(200).json({
-                status: 'success',
-                data: {
-                    message: 'post successfully deleted',
-                    data: removeQuery.rows
+            const removeQuery = await pool.query(remove, value, (err, result) => {
+                if (result) {
+                    return res.status(400).json({
+                        status: 'success',
+                        data: {
+                            message: 'senator deleted successfully',
+                            data: removeQuery.rows
+                        }
+                    });
                 }
-            });
-
+            })
         }
         catch (e) {
             console.log(e);
@@ -179,28 +184,29 @@ const senatorController = {
         try {
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
-            const checkQuery = await pool.query(check, checkValue);
-            // post check response
-            if (!checkQuery.rows[0]) {
-                return res.status(400).json({
-                    status: 'error',
-                    error: 'senator does not exist'
-                });
-            }
+            await pool.query(check, checkValue, async (err, result) => {
+                if (result.length == 0) {
+                    return res.status(400).json({
+                        status: "error",
+                        error: "senator does not exist",
+                    });
+                }
+
             const findState = `SELECT * FROM states WHERE id=?`;
-            const stateValue = [checkQuery.rows[0].state];
+            const stateValue = [result[0].state];
             const findId = await pool.query(findState, stateValue);
             let state = findId.rows[0].state;
-            res.status(200).json({
-                status: 'success',
-                data: {
-                    message: 'Found one',
-                    name: checkQuery.rows[0].name,
-                    email: checkQuery.rows[0].email,
-                    phoneNumber: checkQuery.rows[0].phoneNumber,
-                    state
-                }
-            });
+                res.status(200).json({
+                    status: 'success',
+                    data: {
+                        message: 'Found one',
+                        name: result[0].name,
+                        email: result[0].email,
+                        phoneNumber: result[0].phoneNumber,
+                        state
+                    }
+                });
+            })
         } catch (error) {
             console.log("error on find one", error)
 
@@ -208,24 +214,26 @@ const senatorController = {
     },
     async getAllSenators(req, res) {
         try {
-                // get all posts query 
-                const getSenators = await pool.query(`SELECT * FROM senators`);
-            console.log("getSenators data", getSenators)
-                // if there are no posts available
-                if (!getSenators.rowCount) {
-                    return res.status(400).json({
-                        status: 'error',
-                        error: 'Sorry, there are no senators at the moment'
+                // get all senators query 
+            await pool.query(`SELECT * FROM senators`, (err, result) => {
+                if (result.length > 0) {
+                    res.status(200).json({
+                        status: 'success',
+                        data: result
                     });
-                }
-
-                // get response
-                res.status(200).json({
-                    status: 'success',
-                    data: {
-                          senators: getSenators.rows
-                        }
+                } else if (result.length > 0) {
+                    res.status(200).json({
+                        status: 'error',
+                        error: "No recodrs at the moment"
+                    });
+                } else {
+                    return res.status(400).json({
+                    status: 'error',
+                    error: 'Sorry, there are no senators at the moment'
                 });
+                }
+            
+            })
         }
         catch (e) {
             console.log(e)

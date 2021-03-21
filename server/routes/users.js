@@ -7,7 +7,7 @@ const registerMiddleware = require('../middleware/users');
 const userRouter = Router();
 
 userRouter.post('/signup', registerMiddleware.checkSignUp ,signLogin.signUP);
-userRouter.post('/login', signLogin.logIn);
+userRouter.post('/login',registerMiddleware.login, signLogin.logIn);
 
 // export user route to server.js
 module.exports = userRouter;
