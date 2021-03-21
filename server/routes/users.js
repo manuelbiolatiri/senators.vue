@@ -1,7 +1,7 @@
 const { Router } = require('express');
-const signLogin =require('../controllers/register');
+const signLogin =require('../controllers/users');
 // import user middleware
-const registerMiddleware = require('../middleware/register');
+const registerMiddleware = require('../middleware/users');
 
 // configure route
 const userRouter = Router();

@@ -6,16 +6,16 @@ const pool = require('../models/database');
 const register = {
     async signUP(req, res) {
         // body values
-        const { firstName, lastName, email, password, gender} = req.body;
+        const { firstName, lastName, email, password} = req.body;
 
         try {
             // empty body values
-            if (!firstName || !lastName || !email || !password || !gender) {
+            if (!firstName || !lastName || !email || !password) {
                 return res.status(400).json({
                     status: 'error',
                     error: 'all fields are required'
                 });
-            };
+            }
 
             // generate bcrypt salt
             const salt = await bcrypt.genSalt(10);
@@ -36,9 +36,9 @@ const register = {
             }
             // admin signup
             else if (process.env.ADMIN_EMAIL === email && process.env.ADMIN_PASSWORD === password) {
-                const AdminSignupQuery = `INSERT INTO users (firstName, lastName, email, password, gender, createdon)
-                VALUES($1, $2, $3, $4, $5, $6) RETURNING *`;
-                const values = [firstName, lastName, email, hashedPassword, gender, new Date().toLocaleString()];
+                const AdminSignupQuery = `INSERT INTO users (firstName, lastName, email, password, createdon)
+                VALUES($1, $2, $3, $4, $5) RETURNING *`;
+                const values = [firstName, lastName, email, hashedPassword, new Date().toLocaleString()];
                 const adminResult = await pool.query(AdminSignupQuery, values);
 
                 // generate admin token
@@ -52,9 +52,9 @@ const register = {
             }
             else {
                 // users sign up
-                const signUpQuery = `INSERT INTO users (firstName, lastName, email, password, gender, createdon)
-                VALUES($1, $2, $3, $4, $5, now()) RETURNING *`;
-                const userValue = [firstName, lastName, email, hashedPassword, gender];
+                const signUpQuery = `INSERT INTO users (firstName, lastName, email, password, createdon)
+                VALUES($1, $2, $3, $4, now()) RETURNING *`;
+                const userValue = [firstName, lastName, email, hashedPassword];
                 const signUpQuerys = await pool.query(signUpQuery, userValue);
 
                 if (email === signUpQuerys.rows[0].email) {
@@ -76,11 +76,11 @@ const register = {
                         error: 'account not created'
                     });
                 }
-            };
+            }
         }
         catch (e) {
             console.log(e);
-        };
+        }
     },
     async logIn(req, res) {
         // body values
@@ -93,7 +93,7 @@ const register = {
                     status: 'error',
                     error: 'all fields are required'
                 });
-            };
+            }
 
             // email check (if user with email exist) 
             const logIn = `SELECT * FROM users WHERE email=$1`;
@@ -106,7 +106,7 @@ const register = {
                     status: 'error',
                     error: 'email does not exist, please sign up'
                 });
-            };
+            }
 
             // compare password
             bcrypt.compare(password, logInQuery.rows[0].password, (err, result) => {
@@ -147,7 +147,7 @@ const register = {
         }
         catch (e) {
             console.log(e)
-        };
+        }
     },
     // token verification
     verifyToken(req, res, next) {
@@ -167,7 +167,7 @@ const register = {
                 status: 'error',
                 error: 'forbidden'
             });
-        };
+        }
     }
 };
 

@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const fileUpload = require('express-fileupload');
  
 dotenv.config();
 
@@ -10,16 +9,13 @@ dotenv.config();
 const app = express();
 
 // routers
-const userRouter = require('./routes/register');
-const postRouter = require('./routes/post');
-const commentRouter = require('./routes/comment');
-const imageRouter = require('./routes/image');
-const getRouter = require('./routes/getPost');
+const userRouter = require('./routes/users');
+const senatorRouter = require('./routes/senator');
 
 // configure cors
 app.use(cors());
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3333;
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -32,11 +28,6 @@ app.use((req, res, next) => {
 // configure bodyparser
 app.use(bodyParser.json({ extended : true }));
 
-// configure file-upload
-app.use(fileUpload({
-    useTempFiles: true
-}))
-
 // welcome route
 app.get('/', (req, res) => {
     res.status(200).json(({
@@ -47,10 +38,7 @@ app.get('/', (req, res) => {
 
 // app router
 app.use('/api/v1/', userRouter);
-app.use('/api/v1/', postRouter);
-app.use('/api/v1/', commentRouter);
-app.use('/api/v1/', imageRouter);
-app.use('/api/v1/', getRouter);
+app.use('/api/v1/', senatorRouter);
 
 // wronge routes
 app.use('*', (req, res) => {
