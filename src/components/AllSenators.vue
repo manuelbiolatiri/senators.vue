@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="mb-4"><h1>All Senators</h1></div>
     <b-table striped hover :items="items" :fields="fields">
       <template v-slot:cell(actions)="data">
         <b-button mr-5 variant="primary" @click="updateItem(data.item.id)"

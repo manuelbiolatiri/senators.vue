@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="mb-4"><h1>Add a Senator</h1></div>
     <b-form @submit="onSubmit" @reset="onReset">
       <b-form-group
         id="input-group-1"
