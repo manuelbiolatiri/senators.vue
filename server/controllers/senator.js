@@ -32,12 +32,13 @@ const senatorController = {
                 const stateValue = [req.body.state];
                 await pool.query(findState, stateValue, async (err, result) => {
                     if (result) {
-                        result = JSON.stringify(result);
-                        result = JSON.parse(result);
+                    let state = JSON.stringify(result);
+                        state = JSON.parse(state);
+                        console.log("stateeee", state)
                     // database senator query
                     const create = `INSERT INTO senators (name, email, phoneNumber, state)
                                 VALUES(?, ?, ?, ?)`;
-                    const values = [name, email, phoneNumber, result[0].id];
+                    const values = [name, email, phoneNumber, state[0].id];
                     await pool.query(create, values, (err, result) => {
                         if (result) {
                             return res.status(400).json({
@@ -46,7 +47,7 @@ const senatorController = {
                                     name,
                                     email,
                                     phoneNumber,
-                                    state: result[0].id
+                                    state: state[0].id
                                 },
                                 message: "Senator successfully created",
                             });
@@ -88,12 +89,13 @@ const senatorController = {
                         error: "senator does not exist",
                     });
                 }
-                
+                let newResult = JSON.stringify(result);
+                newResult = JSON.parse(newResult);
                 // body values
-                const name = req.body.name || result[0].name;
-                const phoneNumber = req.body.phoneNumber || result[0].phoneNumber;
-                const email = req.body.phoneNumber || result[0].email;
-                const state = req.body.phoneNumber || result[0].state;
+                const name = req.body.name || newResult[0].name;
+                const phoneNumber = req.body.phoneNumber || newResult[0].phoneNumber;
+                const email = req.body.phoneNumber || newResult[0].email;
+                const state = req.body.phoneNumber || newResult[0].state;
 
                 // check if email exist (email check)
                 const checkEmail = `SELECT * FROM users WHERE email=?`;
@@ -111,6 +113,7 @@ const senatorController = {
                 const modify = `UPDATE senators SET name=?, phoneNumber=?, email=?, state=? WHERE id=?`;
                 const values = [name, phoneNumber, email, state, id];
                 await pool.query(modify, values, (err, updated) => {
+                    console.log("updateddd", updated)
                     if (updated) {
                         return res.status(200).json({
                                 status: 'success',
@@ -163,8 +166,8 @@ const senatorController = {
 
             const remove = `DELETE FROM senators WHERE id=?`;
             const value = [id];
-            const removeQuery = await pool.query(remove, value, (err, result) => {
-                if (result) {
+            const removeQuery = await pool.query(remove, value, (err, results) => {
+                if (results) {
                     return res.status(400).json({
                         status: 'success',
                         data: {
@@ -191,18 +194,19 @@ const senatorController = {
                         error: "senator does not exist",
                     });
                 }
-
+            let newResult = JSON.stringify(result);
+            newResult = JSON.parse(newResult);
             const findState = `SELECT * FROM states WHERE id=?`;
-            const stateValue = [result[0].state];
+            const stateValue = [newResult[0].state];
             const findId = await pool.query(findState, stateValue);
             let state = findId.rows[0].state;
                 res.status(200).json({
                     status: 'success',
                     data: {
                         message: 'Found one',
-                        name: result[0].name,
-                        email: result[0].email,
-                        phoneNumber: result[0].phoneNumber,
+                        name: newResult[0].name,
+                        email: newResult[0].email,
+                        phoneNumber: newResult[0].phoneNumber,
                         state
                     }
                 });
@@ -221,10 +225,10 @@ const senatorController = {
                         status: 'success',
                         data: result
                     });
-                } else if (result.length > 0) {
+                } else if (result.length == 0) {
                     res.status(200).json({
                         status: 'error',
-                        error: "No recodrs at the moment"
+                        error: "No records at the moment"
                     });
                 } else {
                     return res.status(400).json({
