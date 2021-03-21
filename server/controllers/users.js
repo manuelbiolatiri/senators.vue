@@ -101,7 +101,7 @@ const register = {
             const logInQuery = await pool.query(logIn, value);
             console.log("logInQuery logInQuery", logInQuery)
             // email check response
-            if (!logInQuery.rows[0]) {
+            if (!logInQuery.rows) {
                 return res.status(400).json({
                     status: 'error',
                     error: 'email does not exist, please sign up'
