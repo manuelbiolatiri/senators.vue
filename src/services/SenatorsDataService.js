@@ -1,7 +1,14 @@
 import http from "../http-common";
 class SenatorDataService {
-  getAll() {
-    return http.get("/senators");
+  async getAll() {
+    try {
+      const all = await http.get("/senators");
+      return all.data;
+    } catch (error) {
+      console.log("errorrrrr", error)
+      return error;
+    }
+    
   }
 
   get(id) {

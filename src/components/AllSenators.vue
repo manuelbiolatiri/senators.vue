@@ -14,6 +14,9 @@
 </template>
 
 <script>
+import senators from "../services/SenatorsDataService";
+const getAll = senators.getAll;
+console.log("getAll getAll", getAll);
 export default {
   data() {
     return {
