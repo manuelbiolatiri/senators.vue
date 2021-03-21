@@ -35,7 +35,7 @@
       >
         <b-form-input
           id="input-3"
-          v-model="firstname"
+          v-model="firstName"
           placeholder="Enter firstname"
           required
         ></b-form-input>
@@ -43,11 +43,11 @@
       <b-form-group
         id="input-group-4"
         label="Your lastname:"
-        label-for="input-2"
+        label-for="input-4"
       >
         <b-form-input
           id="input-4"
-          v-model="lastname"
+          v-model="lastName"
           placeholder="Enter lastname"
           required
         ></b-form-input>
