@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import service from "../services/TutorialDataService";
+import service from "../services/SenatorsDataService";
 // import router from "../router";
 export default {
   data() {

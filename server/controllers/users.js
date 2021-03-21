@@ -99,7 +99,7 @@ const register = {
             const logIn = `SELECT * FROM users WHERE email=$1`;
             const value = [email];
             const logInQuery = await pool.query(logIn, value);
-
+            console.log("logInQuery logInQuery", logInQuery)
             // email check response
             if (!logInQuery.rows[0]) {
                 return res.status(400).json({
