@@ -23,7 +23,7 @@ const register = {
             const hashedPassword = await bcrypt.hash(password, salt);
 
             // check if user exist (email check)
-            const checkQuery = `SELECT * FROM users WHERE email=$1`;
+            const checkQuery = `SELECT * FROM users WHERE email=?`;
             const value = [email];
             const check = await pool.query(checkQuery, value);
 
