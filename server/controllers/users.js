@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const pool = require('../models/database');
 
@@ -39,27 +39,43 @@ const register = {
                 const signUpQuery = `INSERT INTO users (firstName, lastName, email, password)
                 VALUES(?, ?, ?, ?)`;
                 const userValue = [firstName, lastName, email, hashedPassword];
-                const signUpQuerys = await pool.query(signUpQuery, userValue);
-                console.log("signUpQuerys signUpQuerys", signUpQuerys)
-                if (email === signUpQuerys.rows[0].email) {
-                    // generate user token
-                    jwt.sign({ email, password }, process.env.SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
-                        // token response
-                        res.status(201).json({
-                            status: 'success',
-                            data: {
-                                message: 'user account successfully created',
-                                token,
-                                userId: signUpQuerys.rows[0].user_id
-                            }
-                        })
-                    })
-                } else {
-                    res.status(400).json({
+                 pool.query(signUpQuery, userValue, (err, result) => {
+                if (err) {
+                    return res.status(400).json({
                         status: 'error',
                         error: 'account not created'
-                    });
+                    })
                 }
+                    if (result.length > 0) {
+                        return res.status(400).json({
+                        status: 'error',
+                        error: 'user already exist'
+                      })
+                    } else {
+                        return result;
+                    }
+                      
+                });
+                // console.log("signUpQuerys signUpQuerys", signUpQuerys)
+                // if (email === signUpQuerys.rows[0].email) {
+                //     // generate user token
+                //     jwt.sign({ email, password }, process.env.SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
+                //         // token response
+                //         res.status(201).json({
+                //             status: 'success',
+                //             data: {
+                //                 message: 'user account successfully created',
+                //                 token,
+                //                 userId: signUpQuerys.rows[0].user_id
+                //             }
+                //         })
+                //     })
+                // } else {
+                //     res.status(400).json({
+                //         status: 'error',
+                //         error: 'account not created'
+                //     });
+                // }
         }
         catch (e) {
             console.log(e);
@@ -79,41 +95,66 @@ const register = {
             }
 
             // email check (if user with email exist) 
-            const logIn = `SELECT * FROM users WHERE email=?`;
+            const logInQuery = `SELECT * FROM users WHERE email=?`;
             const value = [email];
-            const logInQuery = await pool.query(logIn, value);
-            console.log("logInQuery logInQuery", logInQuery)
-            // email check response
-            if (!logInQuery.rows) {
-                return res.status(400).json({
-                    status: 'error',
-                    error: 'email does not exist, please sign up'
-                });
-            }
-
-            // compare password
-            bcrypt.compare(password, logInQuery.rows[0].password, (err, result) => {
-                // user login
-            if (email === logInQuery.rows[0].email && result === true) {
-                    jwt.sign({ email, password }, process.env.SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
-                        res.status(201).json({
+             pool.query(logInQuery, value, (err, result) => {
+                if (err) {
+                    return res.status(400).json({
+                        status: 'error',
+                        error: 'account not created'
+                    })
+                }
+                    if (!result) {
+                        return res.status(400).json({
+                        status: 'error',
+                        error: 'email does not exist, please sign up'
+                      })
+                    } else {
+                         return res.status(201).json({
                             status: 'success',
                             message: 'user successfully loged in',
                             data: {
-                                token,
-                                userId: logInQuery.rows[0].user_id
+                                // token,
+                                // userId: logInQuery.rows[0].user_id
+                                result
                             }
-                        })
-                    })
-                }
-                // incorrect email and password
-                else {
-                    res.status(403).json({
-                        status: 'error',
-                        error: 'token not generated, incorrect email or password'
-                    });
-                }
-            });
+                        });
+                    }
+                        // compare password
+            // bcrypt.compare(password, logInQuery.rows[0].password, (err, result) => {
+            //     // user login
+            // if (email === logInQuery.rows[0].email && result === true) {
+            //         jwt.sign({ email, password }, process.env.SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
+            //             res.status(201).json({
+            //                 status: 'success',
+            //                 message: 'user successfully loged in',
+            //                 data: {
+            //                     token,
+            //                     userId: logInQuery.rows[0].user_id
+            //                 }
+            //             })
+            //         })
+            //     }
+            //     // incorrect email and password
+            //     else {
+            //         res.status(403).json({
+            //             status: 'error',
+            //             error: 'token not generated, incorrect email or password'
+            //         });
+            //     }
+            // });
+                      
+                });
+            // console.log("logInQuery logInQuery", logInQuery)
+            // email check response
+            // if (!logInQuery.rows) {
+            //     return res.status(400).json({
+            //         status: 'error',
+            //         error: 'email does not exist, please sign up'
+            //     });
+            // }
+
+            
         }
         catch (e) {
             console.log(e)
