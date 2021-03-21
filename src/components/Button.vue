@@ -1,7 +1,10 @@
 <template>
-  <button @click="onClick()" :style="{ background: green }" class="btn">
+  <!-- <button @click="onClick()" :style="{ background: green }" class="btn">
     {{ text }}
-  </button>
+  </button> -->
+  <!-- <div> -->
+  <b-button type="submit" variant="primary">{{ text }}</b-button>
+  <!-- <b-button type="reset" variant="danger">Reset</b-button> -->
 </template>
 
 <script>

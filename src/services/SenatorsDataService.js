@@ -1,5 +1,4 @@
 import http from "../http-common";
-
 class SenatorDataService {
   getAll() {
     return http.get("/senators");
@@ -27,13 +26,6 @@ class SenatorDataService {
     return http.delete(`/senators/${id}`);
   }
 
-  deleteAll() {
-    return http.delete(`/senators`);
-  }
-
-  findByTitle(title) {
-    return http.get(`/senators?title=${title}`);
-  }
 }
 
 export default new SenatorDataService();

@@ -10,23 +10,18 @@ export default new Router({
       path: "/",
       alias: "/senators",
       name: "senators",
-      component: () => import("./components/AddSenators")
+      component: () => import("./components/AllSenators")
     },
     {
-      path: "/home",
-      alias: "/senators",
-      name: "senators",
-      component: () => import("./components/Button")
+      path: "/add-senator",
+      alias: "/add-senator",
+      name: "add-senator",
+      component: () => import("./components/AddSenators")
     },
     {
       path: "/senators/:id",
-      name: "tutorial-details",
+      name: "edit-senator",
       component: () => import("./components/Senator")
     },
-    {
-      path: "/add",
-      name: "add",
-      component: () => import("./components/AddSenators")
-    }
   ]
 });

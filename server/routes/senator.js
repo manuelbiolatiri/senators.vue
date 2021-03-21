@@ -10,5 +10,7 @@ const senatorRouter = Router();
 senatorRouter.post('/senators', verify.verifyToken, senatorMiddleware.checkSenator ,senatorController.createSenator);
 senatorRouter.put('/senators/:id', verify.verifyToken, senatorMiddleware.checkSenator ,senatorController.modifySenator);
 senatorRouter.delete('/senators/:id', verify.verifyToken, senatorController.deleteSenator);
+senatorRouter.get('/senators', senatorController.getAllSenators);
+senatorRouter.get('/senators/:id', senatorController.findSenatorById);
 
 module.exports = senatorRouter;
