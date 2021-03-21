@@ -1,6 +1,6 @@
 const registerMiddleware = {
     checkSignUp(req, res, next) {
-        const { email, password, gender } = req.body;
+        const { email, password , firstName, lastName} = req.body;
 
         // check if email value has @(mail service).com
         if (!(/[\w]+@[a-zA-Z]+\.[a-zA-Z]{2}/.test(email))) {
@@ -18,10 +18,10 @@ const registerMiddleware = {
             })
         }
 
-        if (gender.length < 3) {
+        if (firstName == '', lastName == '') {
             return res.status(400).json({
                 status: 'error',
-                error: 'gender input length should be more than three characters'
+                error: `${firstName || lastName} can not be empty`
             })
         }
         
