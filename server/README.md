@@ -1,4 +1,4 @@
-# blog-crud-api
+# senator-crud-api
 A simple blog REST API CRUD with nodejs express postgresql.
 
 ### Prerequisite
