@@ -4,7 +4,7 @@ const pool = require('../models/database');
 const senatorController = {
     createSenator(req, res) {
         // body values
-        const { name, phoneNumber, state, email } = req.body;
+        const { name, phoneNumber, email } = req.body;
 
         try {
             // verify token
@@ -29,6 +29,10 @@ const senatorController = {
                     });
                 }
 
+                const findState = `SELECT * FROM states WHERE state=$1`;
+                const stateValue = [req.body.state];
+                const findId = await pool.query(findState, stateValue);
+                let state = findId.rows[0].id;
 
                 // database senator query
                 const create = `INSERT INTO senators (name, email, phoneNumber, state)
@@ -183,6 +187,10 @@ const senatorController = {
                     error: 'senator does not exist'
                 });
             }
+            const findState = `SELECT * FROM states WHERE id=$1`;
+            const stateValue = [checkQuery.rows[0].state];
+            const findId = await pool.query(findState, stateValue);
+            let state = findId.rows[0].state;
             res.status(200).json({
                 status: 'success',
                 data: {
@@ -190,7 +198,7 @@ const senatorController = {
                     name: checkQuery.rows[0].name,
                     email: checkQuery.rows[0].email,
                     phoneNumber: checkQuery.rows[0].phoneNumber,
-                    state: checkQuery.rows[0].state
+                    state
                 }
             });
         } catch (error) {
@@ -200,10 +208,9 @@ const senatorController = {
     },
     async getAllSenators(req, res) {
         try {
-
                 // get all posts query 
                 const getSenators = await pool.query(`SELECT * FROM senators`);
-
+            console.log("getSenators data", getSenators)
                 // if there are no posts available
                 if (!getSenators.rowCount) {
                     return res.status(400).json({
