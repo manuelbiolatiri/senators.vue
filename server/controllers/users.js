@@ -10,12 +10,12 @@ const register = {
 
         try {
             // empty body values
-            if (!firstName || !lastName || !email || !password) {
-                return res.status(400).json({
-                    status: 'error',
-                    error: 'all fields are required'
-                });
-            }
+            // if (!firstName || !lastName || !email || !password) {
+            //     return res.status(400).json({
+            //         status: 'error',
+            //         error: 'all fields are required'
+            //     });
+            // }
 
             // generate bcrypt salt
             const salt = await bcrypt.genSalt(10);

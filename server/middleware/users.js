@@ -1,6 +1,6 @@
 const registerMiddleware = {
     checkSignUp(req, res, next) {
-        const { email, password , firstName, lastName} = req.body;
+        const { email, password } = req.body;
 
         // check if email value has @(mail service).com
         if (!(/[\w]+@[a-zA-Z]+\.[a-zA-Z]{2}/.test(email))) {
@@ -18,12 +18,12 @@ const registerMiddleware = {
             })
         }
 
-        if (firstName == '' || lastName == '') {
-            return res.status(400).json({
-                status: 'error',
-                error: `${firstName || lastName} can not be empty`
-            })
-        }
+        // if (firstName == '' || lastName == '') {
+        //     return res.status(400).json({
+        //         status: 'error',
+        //         error: `${firstName || lastName} can not be empty`
+        //     })
+        // }
         
         next();
     }
