@@ -17,19 +17,16 @@
     </div>
     <div class="col-3 m-auto">
       <Router />
-      <Add />
     </div>
   </div>
 </template>
 
 <script>
-import Add from "./components/AddSenators";
 import Router from "./router";
 export default {
   name: "app",
   components: {
     Router,
-    Add,
   },
 };
 </script>

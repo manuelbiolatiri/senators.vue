@@ -32,7 +32,8 @@ const senatorController = {
                 const stateValue = [req.body.state];
                 await pool.query(findState, stateValue, async (err, result) => {
                     if (result) {
-
+                        result = JSON.stringify(result);
+                        result = JSON.parse(result);
                     // database senator query
                     const create = `INSERT INTO senators (name, email, phoneNumber, state)
                                 VALUES(?, ?, ?, ?)`;
@@ -77,7 +78,7 @@ const senatorController = {
                     })
                 }
             })
-            // select an post query
+
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
             await pool.query(check, checkValue, async (err, result) => {
@@ -106,7 +107,7 @@ const senatorController = {
                     }
                 
                 });
-                // update selected post query
+
                 const modify = `UPDATE senators SET name=?, phoneNumber=?, email=?, state=? WHERE id=?`;
                 const values = [name, phoneNumber, email, state, id];
                 await pool.query(modify, values, (err, updated) => {
@@ -148,7 +149,7 @@ const senatorController = {
                     });
                 }
             })
-            // select an post query
+
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
             await pool.query(check, checkValue, (err, result) => {
@@ -160,7 +161,6 @@ const senatorController = {
                 }
             })
 
-            // delete post query
             const remove = `DELETE FROM senators WHERE id=?`;
             const value = [id];
             const removeQuery = await pool.query(remove, value, (err, result) => {

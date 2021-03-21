@@ -3,7 +3,7 @@ A simple blog REST API CRUD with nodejs express postgresql.
 
 ### Prerequisite
 * install [Node.js](https://nodejs.org/en/)
-* install [PostgreSQL]
+* install [mysql]
 
 ### Installation
 * copy repo link here ```https://github.com/manuelbiolatiri/backendtest.git```
