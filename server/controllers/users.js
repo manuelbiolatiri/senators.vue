@@ -16,12 +16,18 @@ const register = {
             const checkQuery = `SELECT * FROM users WHERE email=?`;
             const value = [email];
             await pool.query(checkQuery, value, (err, result) => {
+                if (!result || !Array.isArray(result)) {
+                    return res.status(400).json({
+                        status: "error",
+                        error: "error fetching user",
+                    });
+                }
                 if (result.length == 1) {
-                return res.status(400).json({
-                status: "error",
-                error: "User already exist.",
-            });
-        }
+                    return res.status(400).json({
+                        status: "error",
+                        error: "User already exist.",
+                    });
+                }
         })
       // users sign up
         const signUpQuery = `INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)`;
