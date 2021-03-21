@@ -18,7 +18,7 @@ const registerMiddleware = {
             })
         }
 
-        if (firstName == '', lastName == '') {
+        if (firstName == '' || lastName == '') {
             return res.status(400).json({
                 status: 'error',
                 error: `${firstName || lastName} can not be empty`
