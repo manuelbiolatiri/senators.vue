@@ -96,7 +96,7 @@ const register = {
             }
 
             // email check (if user with email exist) 
-            const logIn = `SELECT * FROM users WHERE email=$1`;
+            const logIn = `SELECT * FROM users WHERE email=?`;
             const value = [email];
             const logInQuery = await pool.query(logIn, value);
             console.log("logInQuery logInQuery", logInQuery)
@@ -110,21 +110,8 @@ const register = {
 
             // compare password
             bcrypt.compare(password, logInQuery.rows[0].password, (err, result) => {
-                // admin login
-                if (logInQuery.rows[0].email === process.env.ADMIN_EMAIL && result === true) {
-                    jwt.sign({ email, password }, process.env.SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
-                        res.status(201).json({
-                            status: 'success',
-                            message: 'admin successfully loged in',
-                            data: {
-                                token,
-                                adminId: logInQuery.rows[0].user_id
-                            }
-                        });
-                    });
-                }
                 // user login
-                else if (email === logInQuery.rows[0].email && result === true) {
+            if (email === logInQuery.rows[0].email && result === true) {
                     jwt.sign({ email, password }, process.env.SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
                         res.status(201).json({
                             status: 'success',
