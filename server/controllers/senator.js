@@ -17,10 +17,10 @@ const senatorController = {
                     })
                 }
                 // check if email exist (email check)
-                const checkQuery = `SELECT * FROM users WHERE email=$1`;
+                const checkQuery = `SELECT * FROM users WHERE email=?`;
                 const value = [email];
                 const check = await pool.query(checkQuery, value);
-
+                console.log("check email",check)
                 // check if user exist response
                 if (check.rows[0]) {
                     return res.status(400).json({
@@ -29,17 +29,17 @@ const senatorController = {
                     });
                 }
 
-                const findState = `SELECT * FROM states WHERE state=$1`;
+                const findState = `SELECT * FROM states WHERE state=?`;
                 const stateValue = [req.body.state];
                 const findId = await pool.query(findState, stateValue);
                 let state = findId.rows[0].id;
 
                 // database senator query
                 const create = `INSERT INTO senators (name, email, phoneNumber, state)
-                                VALUES($1, $2, $3, $4) RETURNING *`;
+                                VALUES(?, ?, ?, ?)`;
                 const values = [name, email, phoneNumber, state];
                 const createQuery = await pool.query(create, values);
-
+                console.log("check email",createQuery, createQuery.rows[0])
                 // senator response
                 res.status(201).json({
                     status: 'success',
@@ -75,7 +75,7 @@ const senatorController = {
                 }
             })
             // select an post query
-            const check = `SELECT * FROM senators WHERE id=$1`;
+            const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
             const checkQuery = await pool.query(check, checkValue);
 
@@ -86,7 +86,7 @@ const senatorController = {
                     error: 'senator does not exist'
                 });
             }
-
+            console.log("checkQuery senator", checkQuery)
             // body values
             const name = req.body.name || checkQuery.rows[0].name;
             const phoneNumber = req.body.phoneNumber || checkQuery.rows[0].phoneNumber;
@@ -94,7 +94,7 @@ const senatorController = {
             const state = req.body.phoneNumber || checkQuery.rows[0].state;
 
             // check if email exist (email check)
-            const checkEmail = `SELECT * FROM users WHERE email=$1`;
+            const checkEmail = `SELECT * FROM users WHERE email=?`;
             const value = [email];
             const findOne = await pool.query(checkEmail, value);
 
@@ -107,10 +107,10 @@ const senatorController = {
             }
 
             // update selected post query
-            const modify = `UPDATE senators SET name=$1, phoneNumber=$2, email=$3, state=$4 WHERE id=$5 RETURNING *`;
+            const modify = `UPDATE senators SET name=?, phoneNumber=?, email=?, state=? WHERE id=?`;
             const values = [name, phoneNumber, email, state, id];
             const modifyQuery = await pool.query(modify, values)
-
+            console.log("modifyQuery senator", modifyQuery)
             // update response
             res.status(200).json({
                 status: 'success',
@@ -143,7 +143,7 @@ const senatorController = {
                 }
             })
             // select an post query
-            const check = `SELECT * FROM senators WHERE id=$1`;
+            const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
             const checkQuery = await pool.query(check, checkValue);
 
@@ -156,7 +156,7 @@ const senatorController = {
             }
 
             // delete post query
-            const remove = `DELETE FROM senators WHERE id=$1`;
+            const remove = `DELETE FROM senators WHERE id=?`;
             const value = [id];
             const removeQuery = await pool.query(remove, value);
 
@@ -177,7 +177,7 @@ const senatorController = {
     async findSenatorById(req, res) {
         const id = parseInt(req.params.id);
         try {
-            const check = `SELECT * FROM senators WHERE id=$1`;
+            const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
             const checkQuery = await pool.query(check, checkValue);
             // post check response
@@ -187,7 +187,7 @@ const senatorController = {
                     error: 'senator does not exist'
                 });
             }
-            const findState = `SELECT * FROM states WHERE id=$1`;
+            const findState = `SELECT * FROM states WHERE id=?`;
             const stateValue = [checkQuery.rows[0].state];
             const findId = await pool.query(findState, stateValue);
             let state = findId.rows[0].state;

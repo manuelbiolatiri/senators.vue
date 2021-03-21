@@ -11,7 +11,7 @@ class SenatorDataService {
 
   async create(data) {
     try {
-      const user = await http.post("/login", data)
+      const user = await http.post("/signup", data)
       return user.data;
     } catch (error) {
       console.log("errorrrrr", error)

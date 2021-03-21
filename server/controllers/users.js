@@ -34,29 +34,13 @@ const register = {
                     error: 'user already exist'
                 });
             }
-            // admin signup
-            else if (process.env.ADMIN_EMAIL === email && process.env.ADMIN_PASSWORD === password) {
-                const AdminSignupQuery = `INSERT INTO users (firstName, lastName, email, password, createdon)
-                VALUES($1, $2, $3, $4, $5) RETURNING *`;
-                const values = [firstName, lastName, email, hashedPassword, new Date().toLocaleString()];
-                const adminResult = await pool.query(AdminSignupQuery, values);
-
-                // generate admin token
-                jwt.sign({ email, password }, process.env.SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
-                    res.status(201).json({
-                        message: 'admin account successfully created',
-                        token,
-                        adminId: adminResult.rows[0].user_id
-                    });
-                });
-            }
-            else {
+            // user signup
                 // users sign up
-                const signUpQuery = `INSERT INTO users (firstName, lastName, email, password, createdon)
-                VALUES($1, $2, $3, $4, now()) RETURNING *`;
+                const signUpQuery = `INSERT INTO users (firstName, lastName, email, password)
+                VALUES(?, ?, ?, ?)`;
                 const userValue = [firstName, lastName, email, hashedPassword];
                 const signUpQuerys = await pool.query(signUpQuery, userValue);
-
+                console.log("signUpQuerys signUpQuerys", signUpQuerys)
                 if (email === signUpQuerys.rows[0].email) {
                     // generate user token
                     jwt.sign({ email, password }, process.env.SECRET_KEY, { expiresIn: '24h' }, (err, token) => {
@@ -76,7 +60,6 @@ const register = {
                         error: 'account not created'
                     });
                 }
-            }
         }
         catch (e) {
             console.log(e);
