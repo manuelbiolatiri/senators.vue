@@ -16,6 +16,7 @@ const register = {
             const checkQuery = `SELECT * FROM users WHERE email=?`;
             const value = [email];
             await pool.query(checkQuery, value, (err, result) => {
+                console.log("userrrr", result)
                 if (!result || !Array.isArray(result)) {
                     return res.status(400).json({
                         status: "error",

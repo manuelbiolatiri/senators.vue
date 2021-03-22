@@ -19,6 +19,9 @@ import senators from "../services/SenatorsDataService";
 const getAll = senators.getAll;
 console.log("getAll getAll", getAll);
 export default {
+  props: {
+    id: Number,
+  },
   data() {
     return {
       // Note `isActive` is left out and will not appear in the rendered table
@@ -41,7 +44,17 @@ export default {
       ],
     };
   },
+  watch: {
+    id: "getAllSenators",
+  },
+  mounted() {
+    this.getAll();
+  },
   methods: {
+    async getAllSenators() {
+      const item = await senators.getAll;
+      this.items = item;
+    },
     deleteItem(id) {
       const index = this.items.indexOf((x) => x.id === id);
       this.items.splice(index, 1);
