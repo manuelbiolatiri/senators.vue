@@ -89,10 +89,10 @@ export default {
       this.responseAvailable = false;
       const userLogin = await service.create(newUser);
       console.log("userLogin", userLogin);
-      this.$router.push({ path: "/home" });
+      // this.$router.push({ path: "/" });
 
-      this.email = "";
-      this.password = "";
+      // this.email = "";
+      // this.password = "";
     },
     onReset(event) {
       event.preventDefault();

@@ -219,14 +219,14 @@ const senatorController = {
     async getAllSenators(req, res) {
         try {
                 // get all senators query 
-            await pool.query(`SELECT * FROM senators`, (err, result) => {
+            pool.query(`SELECT * FROM senators`, (err, result) => {
                 if (result.length > 0) {
-                    res.status(200).json({
+                    return res.status(200).json({
                         status: 'success',
                         data: result
                     });
                 } else if (result.length == 0) {
-                    res.status(200).json({
+                    return res.status(200).json({
                         status: 'error',
                         error: "No records at the moment"
                     });

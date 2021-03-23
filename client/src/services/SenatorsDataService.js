@@ -3,7 +3,8 @@ class SenatorDataService {
   async getAll() {
     try {
       const all = await http.get("/senators");
-      return all.data;
+      console.log("get allll", all)
+      return all.data.data;
     } catch (error) {
       console.log("errorrrrr", error)
       return error;

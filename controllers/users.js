@@ -15,7 +15,7 @@ const register = {
             // check if user exist (email check)
             const checkQuery = `SELECT * FROM users WHERE email=?`;
             const value = [email];
-            await pool.query(checkQuery, value, (err, result) => {
+            pool.query(checkQuery, value, (err, result) => {
                 console.log("userrrr", result)
                 if (!result || !Array.isArray(result)) {
                     return res.status(400).json({
@@ -33,7 +33,7 @@ const register = {
       // users sign up
         const signUpQuery = `INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)`;
         const userValue = [firstName, lastName, email, hashedPassword];
-        await pool.query(signUpQuery, userValue, (err, result) => {
+        pool.query(signUpQuery, userValue, (err, result) => {
         if (result) {
           //   console.log("ressssss", result);
           console.log("ressssss", signUpQuery);
