@@ -5,10 +5,10 @@ dotenv.config();
 
 // connect to database
 const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
+    host: 'us-cdbr-east-03.cleardb.com'|| process.env.DB_HOST,
+    user: 'b10b61260bcbd0' || process.env.DB_USER,
+    password: '9dc58010' || process.env.DB_PASSWORD,
+    database: 'heroku_52bafaf1dc6c1e7' || process.env.DB_DATABASE,
     port: process.env.DB_PORT,
     insecureAuth : true
 });
