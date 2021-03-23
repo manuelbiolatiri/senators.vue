@@ -12,5 +12,6 @@ senatorRouter.put('/senators/:id', verify.verifyToken, senatorMiddleware.checkSe
 senatorRouter.delete('/senators/:id', verify.verifyToken, senatorController.deleteSenator);
 senatorRouter.get('/senators', senatorController.getAllSenators);
 senatorRouter.get('/senators/:id', senatorController.findSenatorById);
+senatorRouter.post('/senators/email/:id', senatorController.sendEmailToSenator);
 
 module.exports = senatorRouter;

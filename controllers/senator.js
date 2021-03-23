@@ -1,5 +1,14 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../models/database');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth:{
+        user:'emmanuelbiolatiri49@gmail.com',
+        pass:'biolatiriel123'
+    }
+});
 
 const senatorController = {
     createSenator(req, res) {
@@ -243,6 +252,29 @@ const senatorController = {
             console.log(e)
         }
     },
+    sendEmailToSenator(req, res) {
+        const { name, email } = req.body;
+        if (name == "" || name == undefined || email == "" || email == undefined)
+            return res.status(422).json({status: 'error', message: 'name or email can not be empty'})
+        const mailOption = {
+            from :'emmanuelbiolatiri49@gmail.com', // sender this is your email here
+            to : email, // receiver email2
+            subject: "Account Verification",
+            html: `<h3>Hello Senator ${name},  We just want to say hi to you.</h3>`
+        }
+        const mailerGo =  transporter.sendMail(mailOption,(error,result)=>{
+            if(error){
+                console.log("error from nodemail oe gmail", error)
+            }else{
+                console.log(result);
+                  return  res.status(201).json({
+                      status: 'success',
+                      message: 'message sent'
+                    })
+            }
+        })
+        mailerGo();
+    }
 }
 // export senator controller to routes
 module.exports = senatorController;
