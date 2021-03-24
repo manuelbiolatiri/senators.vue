@@ -30,28 +30,17 @@ app.use((req, res, next) => {
 app.use(bodyParser.json({ extended : true }));
 
 // welcome route
-app.get('/', (req, res) => {
-    res.status(200).json(({
-        status: 'success',
-        message: 'welcome to the senators api'
-    }))
-})
+// app.get('/', (req, res) => {
+//     res.status(200).json(({
+//         status: 'success',
+//         message: 'welcome to the senators api'
+//     }))
+// })
 
 // app router
 app.use('/api/v1/', userRouter);
 app.use('/api/v1/', senatorRouter);
 
-// wronge routes
-app.use('*', (req, res) => {
-    res.status(404).json({
-        status: 'error',
-        error: 'wrong route'
-    })
-})
-
-app.listen(port, () => {
-    console.log(`app is running on ${port}`)
-});
 app.use(express.static(path.join(__dirname, 'client/dist')));
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
@@ -67,5 +56,17 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
   });
 }
+
+// wronge routes
+app.use('*', (req, res) => {
+    res.status(404).json({
+        status: 'error',
+        error: 'wrong route'
+    })
+})
+
+app.listen(port, () => {
+    console.log(`app is running on ${port}`)
+});
 
 module.exports = app;
