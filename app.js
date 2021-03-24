@@ -33,7 +33,7 @@ app.use(bodyParser.json({ extended : true }));
 app.get('/', (req, res) => {
     res.status(200).json(({
         status: 'success',
-        message: 'welcome to the blog api'
+        message: 'welcome to the senators api'
     }))
 })
 
