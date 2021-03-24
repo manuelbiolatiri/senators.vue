@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
  
 dotenv.config();
 
@@ -48,8 +49,23 @@ app.use('*', (req, res) => {
     })
 })
 
-app.listen(port,() => {
+app.listen(port, () => {
     console.log(`app is running on ${port}`)
-})
+});
+app.use(express.static(path.join(__dirname, 'client/build')));
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
+if (process.env.NODE_ENV === 'production') {
+  // Exprees will serve up production assets
+  app.use(express.static('client/build'));
+
+  // Express serve up index.html file if it doesn't recognize route
+  const path = require('path');
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
 
 module.exports = app;
