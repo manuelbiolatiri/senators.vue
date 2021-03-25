@@ -21,7 +21,12 @@ export default new Router({
     {
       path: "/senators/:id",
       name: "edit-senator",
-      component: () => import("./components/Senator")
+      component: () => import("./components/EditSenator"), props: true
+    },
+    {
+      path: "/become-an-admin",
+      name: "become-an-admin",
+      component: () => import("./components/Admin")
     },
   ]
 });

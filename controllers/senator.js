@@ -17,18 +17,18 @@ const senatorController = {
 
         try {
             // verify token
-            jwt.verify(req.token, process.env.SECRET_KEY, async (err) => {
-                // incorrect token
-                if (err) {
-                    return res.status(403).json({
-                        status: 'error',
-                        error: 'incorrect token'
-                    })
-                }
+            // jwt.verify(req.token, process.env.SECRET_KEY, async (err) => {
+            //     // incorrect token
+            //     if (err) {
+            //         return res.status(403).json({
+            //             status: 'error',
+            //             error: 'incorrect token'
+            //         })
+            //     }
                 // check if email exist (email check)
                 const checkQuery = `SELECT * FROM senators WHERE email=?`;
                 const value = [email];
-                await pool.query(checkQuery, value, (err, result) => {
+                pool.query(checkQuery, value, (err, result) => {
                 if (result.length == 1) {
                     return res.status(400).json({
                     status: "error",
@@ -39,7 +39,7 @@ const senatorController = {
 
                 const findState = `SELECT * FROM states WHERE state=?`;
                 const stateValue = [req.body.state];
-                await pool.query(findState, stateValue, async (err, result) => {
+                pool.query(findState, stateValue, async (err, result) => {
                     if (result) {
                     let state = JSON.stringify(result);
                         state = JSON.parse(state);
@@ -48,9 +48,9 @@ const senatorController = {
                     const create = `INSERT INTO senators (name, email, phoneNumber, state)
                                 VALUES(?, ?, ?, ?)`;
                     const values = [name, email, phoneNumber, state[0].id];
-                    await pool.query(create, values, (err, result) => {
+                    pool.query(create, values, (err, result) => {
                         if (result) {
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 status: "success",
                                 data: {
                                     name,
@@ -69,7 +69,7 @@ const senatorController = {
                     });
                 }
                 })
-            })
+            // })
         }
         catch (e) {
             console.log("error on creating a senator", e);
@@ -79,19 +79,19 @@ const senatorController = {
         const id = parseInt(req.params.id);
         try {
             // verify token
-            jwt.verify(req.token, process.env.SECRET_KEY, async (err) => {
-                // incorrect token
-                if (err) {
-                    return res.status(403).json({
-                        status: 'error',
-                        error: 'incorrect token'
-                    })
-                }
-            })
+            // jwt.verify(req.token, process.env.SECRET_KEY, async (err) => {
+            //     // incorrect token
+            //     if (err) {
+            //         return res.status(403).json({
+            //             status: 'error',
+            //             error: 'incorrect token'
+            //         })
+            //     }
+            // })
 
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
-            await pool.query(check, checkValue, async (err, result) => {
+            pool.query(check, checkValue, async (err, result) => {
                 if (result.length == 0) {
                     return res.status(400).json({
                         status: "error",
@@ -109,7 +109,7 @@ const senatorController = {
                 // check if email exist (email check)
                 const checkEmail = `SELECT * FROM users WHERE email=?`;
                 const value = [email];
-                await pool.query(checkEmail, value, async (err, founddEmail) => {
+                pool.query(checkEmail, value, async (err, founddEmail) => {
                     if (founddEmail[0]) {
                         return res.status(400).json({
                             status: 'error',
@@ -121,7 +121,7 @@ const senatorController = {
 
                 const modify = `UPDATE senators SET name=?, phoneNumber=?, email=?, state=? WHERE id=?`;
                 const values = [name, phoneNumber, email, state, id];
-                await pool.query(modify, values, (err, updated) => {
+                pool.query(modify, values, (err, updated) => {
                     console.log("updateddd", updated)
                     if (updated) {
                         return res.status(200).json({
@@ -152,19 +152,19 @@ const senatorController = {
         const id = parseInt(req.params.id);
         try {
             // verify token
-            jwt.verify(req.token, process.env.SECRET_KEY, async (err) => {
-                // incorrect token
-                if (err) {
-                    return res.status(403).json({
-                        status: 'error',
-                        error: 'incorrect token'
-                    });
-                }
-            })
+            // jwt.verify(req.token, process.env.SECRET_KEY, async (err) => {
+            //     // incorrect token
+            //     if (err) {
+            //         return res.status(403).json({
+            //             status: 'error',
+            //             error: 'incorrect token'
+            //         });
+            //     }
+            // })
 
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
-            await pool.query(check, checkValue, (err, result) => {
+            pool.query(check, checkValue, (err, result) => {
                 if (result.length == 0) {
                     return res.status(400).json({
                         status: "error",
@@ -175,9 +175,9 @@ const senatorController = {
 
             const remove = `DELETE FROM senators WHERE id=?`;
             const value = [id];
-            const removeQuery = await pool.query(remove, value, (err, results) => {
+            const removeQuery = pool.query(remove, value, (err, results) => {
                 if (results) {
-                    return res.status(400).json({
+                    return res.status(200).json({
                         status: 'success',
                         data: {
                             message: 'senator deleted successfully',
@@ -196,20 +196,23 @@ const senatorController = {
         try {
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
-            await pool.query(check, checkValue, async (err, result) => {
-                if (result.length == 0) {
+            pool.query(check, checkValue, async (err, result) => {
+                if (Array.isArray(result) && !result.length) {
                     return res.status(400).json({
                         status: "error",
                         error: "senator does not exist",
                     });
                 }
             let newResult = JSON.stringify(result);
-            newResult = JSON.parse(newResult);
+            newResult = await JSON.parse(newResult);
             const findState = `SELECT * FROM states WHERE id=?`;
             const stateValue = [newResult[0].state];
-            const findId = await pool.query(findState, stateValue);
-            let state = findId.rows[0].state;
-                res.status(200).json({
+            pool.query(findState, stateValue, (err, stateresult) => {
+                console.log("findIdfindId", stateresult)
+                let realState = JSON.stringify(stateresult);
+                realState = JSON.parse(realState);
+                let state = stateresult[0].state;
+                return res.status(200).json({
                     status: 'success',
                     data: {
                         message: 'Found one',
@@ -219,6 +222,8 @@ const senatorController = {
                         state
                     }
                 });
+            });
+                
             })
         } catch (error) {
             console.log("error on find one", error)
@@ -229,7 +234,13 @@ const senatorController = {
         try {
                 // get all senators query 
             pool.query(`SELECT * FROM senators`, (err, result) => {
-                if (result.length > 0) {
+                if (err) {
+                return res.status(400).json({
+                    status: 'error',
+                    error: 'Sorry, error fetching senators'
+                });
+                }
+                if (result) {
                     return res.status(200).json({
                         status: 'success',
                         data: result
@@ -239,11 +250,35 @@ const senatorController = {
                         status: 'error',
                         error: "No records at the moment"
                     });
-                } else {
-                    return res.status(400).json({
-                    status: 'error',
-                    error: 'Sorry, there are no senators at the moment'
-                });
+                }
+            
+            })
+        }
+        catch (e) {
+            console.log(e)
+        }
+    },
+    async getAllStates(req, res) {
+        try {
+                // get all senators query 
+            pool.query(`SELECT * FROM states`, (err, result) => {
+                console.log(result)
+                if (err) {
+                return res.status(400).json({
+                        status: 'error',
+                        error: 'Sorry, error fetching states'
+                    });
+                }
+                if (result) {
+                    return res.status(200).json({
+                        status: 'success',
+                        data: result
+                    });
+                } else if (result.length == 0) {
+                    return res.status(200).json({
+                        status: 'error',
+                        error: "No states at the moment"
+                    });
                 }
             
             })

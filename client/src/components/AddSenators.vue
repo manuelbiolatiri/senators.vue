@@ -1,7 +1,15 @@
 <template>
   <div>
     <div class="mb-4"><h1>Add a Senator</h1></div>
-    <b-form @submit="onSubmit" @reset="onReset">
+    <b-form @submit="onSubmit">
+      <b-form-group id="input-group-2" label="Name:" label-for="input-2">
+        <b-form-input
+          id="input-2"
+          v-model="name"
+          placeholder="Enter name"
+          required
+        ></b-form-input>
+      </b-form-group>
       <b-form-group
         id="input-group-1"
         label="Email address:"
@@ -16,96 +24,69 @@
           required
         ></b-form-input>
       </b-form-group>
-
-      <b-form-group
-        id="input-group-2"
-        label="Your Password:"
-        label-for="input-2"
-      >
-        <b-form-input
-          id="input-2"
-          v-model="password"
-          placeholder="Enter name"
-          required
-        ></b-form-input>
-      </b-form-group>
-      <b-form-group
-        id="input-group-3"
-        label="Your firstname:"
-        label-for="input-2"
-      >
+      <b-form-group id="input-group-3" label="Phone:" label-for="input-2">
         <b-form-input
           id="input-3"
-          v-model="firstName"
-          placeholder="Enter firstname"
+          v-model="phoneNumber"
+          placeholder="Enter phone no"
           required
         ></b-form-input>
       </b-form-group>
-      <b-form-group
-        id="input-group-4"
-        label="Your lastname:"
-        label-for="input-4"
-      >
+      <b-form-group id="input-group-4" label="State:" label-for="input-4">
+        <!-- <b-form-select :state="state" :states="states"></b-form-select> -->
+        <!-- <select v-model="states">
+          <option :key="item.id" v-for="item in items"></option>
+        </select> -->
+
         <b-form-input
           id="input-4"
-          v-model="lastName"
-          placeholder="Enter lastname"
+          v-model="state"
+          placeholder="Enter state"
           required
         ></b-form-input>
       </b-form-group>
 
       <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
   </div>
 </template>
 
 <script>
 import service from "../services/SenatorsDataService";
-// import router from "../router";
+
 export default {
   data() {
     return {
       email: "",
       password: "",
-      firstName: "",
-      lastName: "",
+      phoneNumber: "",
+      state: null,
+      states: this.states,
     };
+  },
+  mounted() {
+    this.getStates();
+    console.log("this.states", this.states);
   },
   methods: {
     async onSubmit(event) {
       event.preventDefault();
-      if (!this.email || !this.password) {
-        alert(`Please fill in your ${this.email || this.password}`);
-        return;
-      }
-      const newUser = {
-        // id: Math.floor(Math.random() * 100000),
+      const newSenator = {
+        name: this.name,
         email: this.email,
-        password: this.password,
-        firstName: this.firstName,
-        lastName: this.lastName,
+        phoneNumber: this.phoneNumber,
+        state: this.state,
       };
-      this.responseAvailable = false;
-      const userLogin = await service.create(newUser);
-      console.log("userLogin", userLogin);
-      // this.$router.push({ path: "/" });
 
-      // this.email = "";
-      // this.password = "";
+      const create = await service.createSenator(newSenator);
+      console.log("userLogin", create);
+      this.$router.push({ path: "/" });
     },
-    onReset(event) {
-      event.preventDefault();
-      // Reset our form values
-      this.form.email = "";
-      this.form.name = "";
-      this.form.food = null;
-      this.form.checked = [];
-      // Trick to reset/clear native browser form validation state
-      this.show = false;
-      this.$nextTick(() => {
-        this.show = true;
-      });
+    async getStates() {
+      const item = await service.getAllStates();
+      console.log("this.states", await item);
+
+      this.states = await item;
     },
   },
 };

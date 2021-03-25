@@ -24,12 +24,14 @@
           :filter="filter"
         >
           <template v-slot:cell(actions)="data">
-            <b-button mr-5 variant="primary" @click="updateItem(data.id)"
+            <!-- <li :key="item.id" v-for="item in items"> -->
+            <b-button mr-5 variant="primary" @click="updateItem(data.item.id)"
               >Update</b-button
             >
-            <b-button variant="danger" @click="deleteItem(data.id)"
+            <b-button variant="danger" @click="deleteItem(data.item.id)"
               >Delete</b-button
             >
+            <!-- </li> -->
           </template>
         </b-table>
         <b-pagination
@@ -48,7 +50,11 @@ import senators from "../services/SenatorsDataService";
 const getAll = senators.getAll;
 console.log("getAll getAll", getAll);
 export default {
-  props: ["itemss"],
+  props: {
+    id: {
+      type: Number,
+    },
+  },
   data() {
     return {
       filter: "",
@@ -71,13 +77,11 @@ export default {
     },
     deleteItem(id) {
       console.log("iddddddddd", id);
-      const index = this.items.indexOf((x) => x.id === id);
-      this.items.splice(index, 1);
+      senators.delete(id);
     },
     updateItem(id) {
       console.log("iddddddddd", id);
-      const index = this.items.indexOf((x) => x.id === id);
-      this.items.splice(index, 1);
+      this.$router.push(`/senators/${id}`);
     },
   },
   computed: {

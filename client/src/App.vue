@@ -8,7 +8,12 @@
         </li>
         <li class="nav-item">
           <router-link to="/add-senator" class="nav-link"
-            >Add a Senator</router-link
+            >Add a senator</router-link
+          >
+        </li>
+        <li class="nav-item">
+          <router-link to="/become-an-admin" class="nav-link"
+            >Become an Admin User</router-link
           >
         </li>
       </div>
