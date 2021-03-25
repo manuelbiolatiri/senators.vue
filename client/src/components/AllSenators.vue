@@ -34,12 +34,14 @@
             <!-- </li> -->
           </template>
         </b-table>
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="rows"
-          :per-page="perPage"
-          aria-controls="my-table"
-        ></b-pagination>
+        <template class="m-auto">
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="rows"
+            :per-page="perPage"
+            aria-controls="my-table"
+          ></b-pagination>
+        </template>
       </b-col>
     </b-row>
   </div>
@@ -47,8 +49,8 @@
 
 <script>
 import senators from "../services/SenatorsDataService";
-const getAll = senators.getAll;
-console.log("getAll getAll", getAll);
+import cogoToast from "cogo-toast";
+
 export default {
   props: {
     id: {
@@ -58,7 +60,7 @@ export default {
   data() {
     return {
       filter: "",
-      perPage: 2,
+      perPage: 7,
       currentPage: 1,
       fields: ["id", "name", "email", "phoneNumber", "state", "actions"],
       items: this.item,
@@ -72,12 +74,25 @@ export default {
   },
   methods: {
     async getAllSenators() {
-      const item = await senators.getAll;
-      this.items = item;
+      const { error, data } = await senators.getAll();
+      console.log("itemmm", await data);
+      if (error) {
+        cogoToast.error("Error fetching senators!");
+      } else {
+        cogoToast.success("Senators fetched successfully!");
+        this.items = data;
+      }
     },
-    deleteItem(id) {
+    async deleteItem(id) {
       console.log("iddddddddd", id);
-      senators.delete(id);
+      const { error } = senators.delete(id);
+      if (error) {
+        cogoToast.error("Error deleting senator!");
+      } else {
+        // this.$router.push({ path: "/" });
+        cogoToast.success("Senators deleted successfully!");
+        window.location.reload();
+      }
     },
     updateItem(id) {
       console.log("iddddddddd", id);

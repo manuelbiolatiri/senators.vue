@@ -4,10 +4,10 @@ class SenatorDataService {
     try {
       const all = await http.get("/senators");
       console.log("get allll", all)
-      return all.data.data;
+      return {data:all.data.data};
     } catch (error) {
       console.log("errorrrrr", error)
-      return error;
+      return {error: error};
     }
     
   }
@@ -48,10 +48,11 @@ class SenatorDataService {
     async createSenator(data) {
     try {
       const user = await http.post("/senators", data)
-      return user.data;
+      console.log("user", await user)
+      return {data: user.data};
     } catch (error) {
       console.log("errorrrrr", error)
-      return error;
+      return {error: error};
     }
   }
 
@@ -59,8 +60,15 @@ class SenatorDataService {
     return http.put(`/senators/${id}`, data);
   }
 
-  delete(id) {
-    return http.delete(`/senators/${id}`);
+  async delete(id) {
+    try {
+      const deleteuser = await http.delete(`/senators/${id}`);
+      console.log("user", deleteuser)
+      return {data: deleteuser.data};
+    } catch (error) {
+      console.log("errorrrrr", error)
+      return {error};
+    }
   }
 
 }

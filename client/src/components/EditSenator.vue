@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-4">
-      <h1>Edit Senator {{ $route.params.id }}</h1>
+      <h1>Edit Senator {{ senator.name }}</h1>
     </div>
     <b-form @submit="onSubmit">
       <b-form-group id="input-group-1" label="Name:" label-for="input-1">

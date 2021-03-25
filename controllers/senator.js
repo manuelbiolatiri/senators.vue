@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const senatorController = {
-    createSenator(req, res) {
+   async createSenator(req, res) {
         // body values
         const { name, phoneNumber, email } = req.body;
 
@@ -29,7 +29,9 @@ const senatorController = {
                 const checkQuery = `SELECT * FROM senators WHERE email=?`;
                 const value = [email];
                 pool.query(checkQuery, value, (err, result) => {
-                if (result.length == 1) {
+                    let newResult = JSON.stringify(result);
+                        newResult = JSON.parse(newResult);
+                if (newResult.length && newResult.length == 1) {
                     return res.status(400).json({
                     status: "error",
                     error: "senator with this email already exist.",
@@ -40,10 +42,17 @@ const senatorController = {
                 const findState = `SELECT * FROM states WHERE state=?`;
                 const stateValue = [req.body.state];
                 pool.query(findState, stateValue, async (err, result) => {
+                
                     if (result) {
                     let state = JSON.stringify(result);
                         state = JSON.parse(state);
                         console.log("stateeee", state)
+                        if (state.length === 0 || !state.length) {
+                            return res.status(400).json({
+                                status: "error",
+                                error: "You seleccted an unknown state. Try (lagos, kano or abuja).",
+                            });
+                        }
                     // database senator query
                     const create = `INSERT INTO senators (name, email, phoneNumber, state)
                                 VALUES(?, ?, ?, ?)`;
@@ -196,7 +205,7 @@ const senatorController = {
         try {
             const check = `SELECT * FROM senators WHERE id=?`;
             const checkValue = [id];
-            pool.query(check, checkValue, async (err, result) => {
+            pool.query(check, checkValue, (err, result) => {
                 if (Array.isArray(result) && !result.length) {
                     return res.status(400).json({
                         status: "error",
@@ -204,7 +213,7 @@ const senatorController = {
                     });
                 }
             let newResult = JSON.stringify(result);
-            newResult = await JSON.parse(newResult);
+            newResult = JSON.parse(newResult);
             const findState = `SELECT * FROM states WHERE id=?`;
             const stateValue = [newResult[0].state];
             pool.query(findState, stateValue, (err, stateresult) => {
@@ -233,7 +242,7 @@ const senatorController = {
     async getAllSenators(req, res) {
         try {
                 // get all senators query 
-            pool.query(`SELECT * FROM senators`, (err, result) => {
+          await  pool.execute(`SELECT * FROM senators`, (err, result) => {
                 if (err) {
                 return res.status(400).json({
                     status: 'error',

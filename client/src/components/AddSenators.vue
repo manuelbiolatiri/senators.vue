@@ -53,7 +53,7 @@
 
 <script>
 import service from "../services/SenatorsDataService";
-
+import cogoToast from "cogo-toast";
 export default {
   data() {
     return {
@@ -64,10 +64,10 @@ export default {
       states: this.states,
     };
   },
-  mounted() {
-    this.getStates();
-    console.log("this.states", this.states);
-  },
+  // mounted() {
+  //   this.getStates();
+  //   console.log("this.states", this.states);
+  // },
   methods: {
     async onSubmit(event) {
       event.preventDefault();
@@ -78,9 +78,14 @@ export default {
         state: this.state,
       };
 
-      const create = await service.createSenator(newSenator);
-      console.log("userLogin", create);
-      this.$router.push({ path: "/" });
+      const { error, data } = await service.createSenator(newSenator);
+      if (error) {
+        cogoToast.error(error);
+      } else {
+        cogoToast.success("Senators created successfully!");
+        this.items = data;
+      }
+      // this.$router.push({ path: "/" });
     },
     async getStates() {
       const item = await service.getAllStates();
