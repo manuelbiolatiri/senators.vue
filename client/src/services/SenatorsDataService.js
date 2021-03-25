@@ -71,6 +71,17 @@ class SenatorDataService {
     }
   }
 
+  async sendMail(id, payload) {
+    try {
+      const mail = await http.post(`/senators/email/${id}`, payload);
+      console.log("user", mail)
+      return {data: mail.data};
+    } catch (error) {
+      console.log("errorrrrr", error)
+      return {error};
+    }
+  }
+
 }
 
 export default new SenatorDataService();

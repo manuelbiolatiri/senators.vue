@@ -25,6 +25,12 @@
         >
           <template v-slot:cell(actions)="data">
             <!-- <li :key="item.id" v-for="item in items"> -->
+            <b-button
+              mr-5
+              variant="info"
+              @click="email(data.item.id, data.item)"
+              >Mail</b-button
+            >
             <b-button mr-5 variant="primary" @click="updateItem(data.item.id)"
               >Update</b-button
             >
@@ -92,6 +98,15 @@ export default {
         // this.$router.push({ path: "/" });
         cogoToast.success("Senators deleted successfully!");
         window.location.reload();
+      }
+    },
+    async email(id, userData) {
+      const { error } = senators.sendMail(id, userData);
+      if (error) {
+        cogoToast.error("Error sending email to senator!");
+      } else {
+        // this.$router.push({ path: "/" });
+        cogoToast.success("Email successfully sent!");
       }
     },
     updateItem(id) {
